@@ -1,74 +1,578 @@
-<div class="test-process">
-  <div class="test-process__header">
-    {% if section.settings.header_text %}
-      <h2 class="test-process__title">{{ section.settings.header_text }}</h2>
-    {% endif %}
-    {% if section.settings.header_subtext %}
-      <p class="test-process__subtitle">{{ section.settings.header_subtext }}</p>
-    {% endif %}
-  </div>
+{% liquid
+  assign slide_count = section.blocks.size
+%}
 
-  <div class="test-process__content">
-    <p>{{ section.settings.content_text }}</p>
+<section
+  class="testimonial-section testimonial-section--{{ section.id }}"
+  style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  <div class="testimonial-section__inner">
+    {% if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.intro != blank %}
+      <div class="testimonial-section__header">
+        {% if section.settings.eyebrow != blank %}
+          <p class="testimonial-section__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if section.settings.heading != blank %}
+          <h2 class="testimonial-section__heading">{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if section.settings.intro != blank %}
+          <div class="testimonial-section__intro rte">{{ section.settings.intro }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if slide_count > 0 %}
+      <div
+        class="testimonial-section__slider"
+        data-testimonial-slider
+        data-section-id="{{ section.id }}"
+        data-slide-count="{{ slide_count }}"
+      >
+        <div class="testimonial-section__viewport">
+          <div class="testimonial-section__track" data-testimonial-track>
+            {% for block in section.blocks %}
+              <div
+                class="testimonial-section__slide{% if forloop.first %} is-active{% endif %}"
+                data-testimonial-slide
+                data-slide-index="{{ forloop.index0 }}"
+                {{ block.shopify_attributes }}
+              >
+                <article class="testimonial-section__card">
+                  <div class="testimonial-section__media">
+                    {% if block.settings.image != blank %}
+                      {{
+                        block.settings.image
+                        | image_url: width: 1200
+                        | image_tag:
+                          class: 'testimonial-section__image',
+                          loading: 'lazy',
+                          widths: '400, 600, 800, 1000, 1200',
+                          sizes: '(min-width: 750px) 42vw, 100vw',
+                          alt: block.settings.author_name
+                      }}
+                    {% else %}
+                      <div class="testimonial-section__image testimonial-section__image--placeholder">
+                        {{ 'image' | placeholder_svg_tag: 'testimonial-section__placeholder' }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="testimonial-section__content">
+                    <span class="testimonial-section__quote-mark">"</span>
+
+                    {% if block.settings.title != blank %}
+                      <h3 class="testimonial-section__testimonial-title">{{ block.settings.title | escape }}</h3>
+                    {% endif %}
+
+                    {% if block.settings.content != blank %}
+                      <div class="testimonial-section__testimonial-text rte">{{ block.settings.content }}</div>
+                    {% endif %}
+
+                    {% if block.settings.author_name != blank or block.settings.author_role != blank %}
+                      <div class="testimonial-section__author">
+                        {% if block.settings.author_name != blank %}
+                          <p class="testimonial-section__author-name">{{ block.settings.author_name | escape }}</p>
+                        {% endif %}
+
+                        {% if block.settings.author_role != blank %}
+                          <p class="testimonial-section__author-role">{{ block.settings.author_role | escape }}</p>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </article>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if slide_count > 1 %}
+          <div class="testimonial-section__controls">
+            <div class="testimonial-section__dots" role="tablist" aria-label="Testimonials">
+              {% for block in section.blocks %}
+                <button
+                  type="button"
+                  class="testimonial-section__dot{% if forloop.first %} is-active{% endif %}"
+                  data-testimonial-dot
+                  data-slide-index="{{ forloop.index0 }}"
+                  aria-label="Go to testimonial {{ forloop.index }}"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                ></button>
+              {% endfor %}
+            </div>
+
+            <div class="testimonial-section__buttons">
+              <button
+                type="button"
+                class="testimonial-section__button"
+                data-testimonial-prev
+                aria-label="Previous testimonial"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M15.5 4.5L8 12l7.5 7.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="testimonial-section__button"
+                data-testimonial-next
+                aria-label="Next testimonial"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M8.5 4.5L16 12l-7.5 7.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <article class="testimonial-section__card testimonial-section__card--empty">
+        <div class="testimonial-section__media">
+          <div class="testimonial-section__image testimonial-section__image--placeholder">
+            {{ 'image' | placeholder_svg_tag: 'testimonial-section__placeholder' }}
+          </div>
+        </div>
+
+        <div class="testimonial-section__content">
+          <span class="testimonial-section__quote-mark">"</span>
+          <h3 class="testimonial-section__testimonial-title">Add your first testimonial</h3>
+          <div class="testimonial-section__testimonial-text rte">
+            <p>Use testimonial blocks in the theme editor to add an image, title, review, and customer details.</p>
+          </div>
+        </div>
+      </article>
+    {% endif %}
   </div>
-</div>
+</section>
 
 <style>
-  .test-process {
-    padding: 40px 20px;
+  .testimonial-section--{{ section.id }} {
+    --testimonial-background: linear-gradient(135deg, #f8efe3 0%, #fffaf4 55%, #f4ede6 100%);
+    --testimonial-surface: #ffffff;
+    --testimonial-text: #1e293b;
+    --testimonial-muted: #64748b;
+    --testimonial-accent: #111827;
+    --testimonial-border: rgba(15, 23, 42, 0.1);
+    padding: var(--section-padding-top) 20px var(--section-padding-bottom);
+    background: var(--testimonial-background);
   }
 
-  .test-process__header {
-    text-align: center;
-    margin-bottom: 30px;
+  .testimonial-section--{{ section.id }} .testimonial-section__inner {
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  .test-process__title {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #333;
+  .testimonial-section--{{ section.id }} .testimonial-section__header {
+    max-width: 680px;
+    margin-bottom: 32px;
   }
 
-  .test-process__subtitle {
+  .testimonial-section--{{ section.id }} .testimonial-section__eyebrow {
+    margin: 0 0 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--testimonial-muted);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__heading {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--testimonial-accent);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__intro {
+    margin-top: 14px;
+    color: var(--testimonial-muted);
     font-size: 1rem;
-    color: #666;
+    line-height: 1.7;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__intro > *:first-child,
+  .testimonial-section--{{ section.id }} .testimonial-section__testimonial-text > *:first-child {
+    margin-top: 0;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__intro > *:last-child,
+  .testimonial-section--{{ section.id }} .testimonial-section__testimonial-text > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__slider {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__viewport {
+    overflow: hidden;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__track {
+    display: flex;
+    transition: transform 0.45s ease;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__slide {
+    width: 100%;
+    flex: 0 0 100%;
+    background: transparent;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-height: 100%;
+    border: 1px solid var(--testimonial-border);
+    border-radius: 28px;
+    overflow: hidden;
+    background: var(--testimonial-surface);
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__media {
+    position: relative;
+    min-height: 320px;
+    background: #eadfd1;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__image,
+  .testimonial-section--{{ section.id }} .testimonial-section__image--placeholder,
+  .testimonial-section--{{ section.id }} .testimonial-section__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__image img,
+  .testimonial-section--{{ section.id }} .testimonial-section__image {
+    object-fit: cover;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 42%),
+      linear-gradient(160deg, #dfd0bf, #f4ebe1);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__placeholder {
+    width: 100%;
+    height: auto;
+    max-width: 220px;
+    opacity: 0.55;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 34px 26px;
+    color: var(--testimonial-text);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__quote-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 18px;
+    border-radius: 999px;
+    background: #f5efe7;
+    color: var(--testimonial-accent);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__testimonial-title {
+    margin: 0 0 14px;
+    font-size: clamp(1.6rem, 2.8vw, 2.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--testimonial-accent);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__testimonial-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--testimonial-muted);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__author {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--testimonial-border);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__author-name,
+  .testimonial-section--{{ section.id }} .testimonial-section__author-role {
     margin: 0;
   }
 
-  .test-process__content {
-    max-width: 800px;
-    margin: 0 auto;
-    line-height: 1.6;
-    color: #444;
+  .testimonial-section--{{ section.id }} .testimonial-section__author-name {
+    font-weight: 700;
+    color: var(--testimonial-accent);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__author-role {
+    margin-top: 6px;
+    color: var(--testimonial-muted);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__card--empty {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__controls {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__dots {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__dot {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background-color: rgba(17, 24, 39, 0.22);
+    cursor: pointer;
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__dot.is-active {
+    background-color: var(--testimonial-accent);
+    transform: scale(1.15);
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--testimonial-accent);
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .testimonial-section--{{ section.id }} .testimonial-section__button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .testimonial-section--{{ section.id }} {
+      padding-inline: 32px;
+    }
+
+    .testimonial-section--{{ section.id }} .testimonial-section__card {
+      grid-template-columns: minmax(300px, 0.95fr) minmax(340px, 1.05fr);
+      min-height: 560px;
+    }
+
+    .testimonial-section--{{ section.id }} .testimonial-section__media {
+      min-height: 560px;
+    }
+
+    .testimonial-section--{{ section.id }} .testimonial-section__content {
+      padding: 56px 54px 42px;
+    }
+
+    .testimonial-section--{{ section.id }} .testimonial-section__controls {
+      width: min(420px, calc(52% - 18px));
+      margin-left: auto;
+    }
   }
 </style>
 
+<script>
+  (function() {
+    var slider = document.querySelector('.testimonial-section--{{ section.id }} [data-testimonial-slider]');
+    if (!slider) return;
+
+    var track = slider.querySelector('[data-testimonial-track]');
+    var slides = Array.prototype.slice.call(slider.querySelectorAll('[data-testimonial-slide]'));
+    var dots = Array.prototype.slice.call(slider.querySelectorAll('[data-testimonial-dot]'));
+    var prevButton = slider.querySelector('[data-testimonial-prev]');
+    var nextButton = slider.querySelector('[data-testimonial-next]');
+    var total = slides.length;
+    var currentIndex = 0;
+
+    function updateSlider(index) {
+      if (!track || !total) return;
+
+      currentIndex = (index + total) % total;
+      track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+
+      slides.forEach(function(slide, slideIndex) {
+        slide.classList.toggle('is-active', slideIndex === currentIndex);
+      });
+
+      dots.forEach(function(dot, dotIndex) {
+        var isActive = dotIndex === currentIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+
+    if (prevButton) {
+      prevButton.addEventListener('click', function() {
+        updateSlider(currentIndex - 1);
+      });
+    }
+
+    if (nextButton) {
+      nextButton.addEventListener('click', function() {
+        updateSlider(currentIndex + 1);
+      });
+    }
+
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        updateSlider(Number(dot.getAttribute('data-slide-index')));
+      });
+    });
+
+    document.addEventListener('shopify:block:select', function(event) {
+      var sectionElement = slider.closest('.testimonial-section--{{ section.id }}');
+      if (!sectionElement || !sectionElement.contains(event.target)) return;
+
+      var selectedSlide = event.target.closest('[data-testimonial-slide]');
+      if (!selectedSlide) return;
+
+      updateSlider(Number(selectedSlide.getAttribute('data-slide-index')));
+    });
+
+    updateSlider(0);
+  })();
+</script>
+
 {% schema %}
 {
-  "name": "new custom section",
+  "name": "Testimonials slider",
   "settings": [
     {
       "type": "text",
-      "id": "header_text",
-      "label": "Header Text",
-      "default": "Our Process"
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Testimonials"
     },
     {
       "type": "text",
-      "id": "header_subtext",
-      "label": "Header Subtext",
-      "default": "How we work"
+      "id": "heading",
+      "label": "Heading",
+      "default": "What our customers are saying"
     },
     {
       "type": "richtext",
-      "id": "content_text",
-      "label": "Content",
-      "default": "<p>Add your content here</p>"
+      "id": "intro",
+      "label": "Intro text",
+      "default": "<p>Share real feedback from happy customers with a strong image-led layout.</p>"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
     }
   ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Beautiful quality and an even better experience"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>This section is perfect for highlighting a detailed customer story. Add a thoughtful review here so shoppers instantly understand the value of your brand.</p>"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name",
+          "default": "Ava Thompson"
+        },
+        {
+          "type": "text",
+          "id": "author_role",
+          "label": "Author role",
+          "default": "Verified customer"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
   "presets": [
     {
-      "name": "new custom section"
+      "name": "Testimonials slider",
+      "blocks": [
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        }
+      ]
     }
   ]
 }
