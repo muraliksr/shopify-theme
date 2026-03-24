@@ -524,11 +524,39 @@
     },
     "test_process_GwRdzT": {
       "type": "test-process",
+      "blocks": {
+        "testimonial_f6RKb8": {
+          "type": "testimonial",
+          "settings": {
+            "image": "shopify://shop_images/image-4_ea3abf52-4674-4537-9df5-4bfbdd7ef73e.png",
+            "title": "Beautiful quality and an even better experience",
+            "content": "<p>This section is perfect for highlighting a detailed customer story. Add a thoughtful review here so shoppers instantly understand the value of your brand.</p>",
+            "author_name": "Ava Thompson",
+            "author_role": "Verified customer"
+          }
+        },
+        "testimonial_zKkXBq": {
+          "type": "testimonial",
+          "settings": {
+            "image": "shopify://shop_images/titles.webp",
+            "title": "Beautiful quality and an even better experience",
+            "content": "<p>This section is perfect for highlighting a detailed customer story. Add a thoughtful review here so shoppers instantly understand the value of your brand.</p>",
+            "author_name": "Ava Thompson",
+            "author_role": "Verified customer"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_f6RKb8",
+        "testimonial_zKkXBq"
+      ],
       "name": "new custom section",
       "settings": {
-        "header_text": "Our Process",
-        "header_subtext": "How we work",
-        "content_text": "<p>Add your content here</p>"
+        "eyebrow": "Testimonials",
+        "heading": "What our customers are saying",
+        "intro": "<p>Share real feedback from happy customers with a strong image-led layout.</p>",
+        "padding_top": 72,
+        "padding_bottom": 72
       }
     }
   },
