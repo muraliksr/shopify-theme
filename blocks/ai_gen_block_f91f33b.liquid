@@ -1,0 +1,505 @@
+{% doc %}
+  @prompt
+    gaol: testomonial section.
+    1.whole section backround image (mobile responsive and desktop responsive)
+    2.1000px cneter 50% image 50% content
+      * image we can add mobile responsive and desktop responsive
+    * content 1.title, 2.content, 3. slider icon privious and next button and round shape . slider  
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-testimonial-section-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
+  .ai-testimonial-bg-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .ai-testimonial-bg-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-testimonial-bg-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-testimonial-bg-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+  }
+
+  .ai-testimonial-container-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: {{ block.settings.section_padding_top }}px 20px {{ block.settings.section_padding_bottom }}px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .ai-testimonial-image-wrapper-{{ ai_gen_id }} {
+    flex: 0 0 50%;
+    width: 50%;
+  }
+
+  .ai-testimonial-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-testimonial-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #e6e6e6;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-testimonial-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+  }
+
+  .ai-testimonial-content-wrapper-{{ ai_gen_id }} {
+    flex: 0 0 50%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .ai-testimonial-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.text_color }};
+    margin: 0;
+  }
+
+  .ai-testimonial-slider-{{ ai_gen_id }} {
+    position: relative;
+  }
+
+  .ai-testimonial-slides-{{ ai_gen_id }} {
+    overflow: hidden;
+  }
+
+  .ai-testimonial-slide-{{ ai_gen_id }} {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .ai-testimonial-slide-{{ ai_gen_id }}.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .ai-testimonial-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.content_size }}px;
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+  }
+
+  .ai-testimonial-controls-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .ai-testimonial-btn-{{ ai_gen_id }} {
+    width: {{ block.settings.button_size }}px;
+    height: {{ block.settings.button_size }}px;
+    border-radius: 50%;
+    background-color: {{ block.settings.button_bg_color }};
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+
+  .ai-testimonial-btn-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-testimonial-btn-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+    stroke: {{ block.settings.button_icon_color }};
+    fill: none;
+    stroke-width: 2;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-testimonial-container-{{ ai_gen_id }} {
+      flex-direction: column;
+      padding: {{ block.settings.section_padding_top_mobile }}px 20px {{ block.settings.section_padding_bottom_mobile }}px;
+    }
+
+    .ai-testimonial-image-wrapper-{{ ai_gen_id }},
+    .ai-testimonial-content-wrapper-{{ ai_gen_id }} {
+      flex: 0 0 100%;
+      width: 100%;
+    }
+
+    .ai-testimonial-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size_mobile }}px;
+    }
+
+    .ai-testimonial-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.content_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<testimonial-slider-{{ ai_gen_id }} class="ai-testimonial-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-testimonial-bg-{{ ai_gen_id }}">
+    {% if block.settings.background_image %}
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        srcset="{{ block.settings.background_image | image_url: width: 750 }} 750w,
+                {{ block.settings.background_image | image_url: width: 1500 }} 1500w,
+                {{ block.settings.background_image | image_url: width: 2000 }} 2000w"
+        sizes="100vw"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.background_image.width }}"
+        height="{{ block.settings.background_image.height }}"
+      >
+    {% else %}
+      <div class="ai-testimonial-bg-placeholder-{{ ai_gen_id }}">
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="ai-testimonial-container-{{ ai_gen_id }}">
+    <div class="ai-testimonial-image-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.testimonial_image %}
+        <img
+          src="{{ block.settings.testimonial_image | image_url: width: 800 }}"
+          alt="{{ block.settings.testimonial_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.testimonial_image.width }}"
+          height="{{ block.settings.testimonial_image.height }}"
+          class="ai-testimonial-image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-testimonial-image-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="ai-testimonial-content-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.title != blank %}
+        <h2 class="ai-testimonial-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+      {% endif %}
+
+      <div class="ai-testimonial-slider-{{ ai_gen_id }}">
+        <div class="ai-testimonial-slides-{{ ai_gen_id }}">
+          {% for i in (1..5) %}
+            {% liquid
+              assign content_key = 'testimonial_' | append: i
+              assign testimonial_content = block.settings[content_key]
+            %}
+            {% if testimonial_content != blank %}
+              <div class="ai-testimonial-slide-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index }}">
+                <div class="ai-testimonial-text-{{ ai_gen_id }}">
+                  {{ testimonial_content }}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <div class="ai-testimonial-controls-{{ ai_gen_id }}">
+          <button class="ai-testimonial-btn-{{ ai_gen_id }} ai-testimonial-prev-{{ ai_gen_id }}" aria-label="Previous testimonial">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button class="ai-testimonial-btn-{{ ai_gen_id }} ai-testimonial-next-{{ ai_gen_id }}" aria-label="Next testimonial">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</testimonial-slider-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class TestimonialSlider{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentSlide = 0;
+        this.slides = [];
+      }
+
+      connectedCallback() {
+        this.slides = Array.from(this.querySelectorAll('.ai-testimonial-slide-{{ ai_gen_id }}'));
+        this.prevBtn = this.querySelector('.ai-testimonial-prev-{{ ai_gen_id }}');
+        this.nextBtn = this.querySelector('.ai-testimonial-next-{{ ai_gen_id }}');
+
+        if (this.slides.length > 0) {
+          this.setupEventListeners();
+        }
+      }
+
+      setupEventListeners() {
+        this.prevBtn.addEventListener('click', () => this.showSlide(this.currentSlide - 1));
+        this.nextBtn.addEventListener('click', () => this.showSlide(this.currentSlide + 1));
+      }
+
+      showSlide(index) {
+        this.slides[this.currentSlide].classList.remove('active');
+
+        if (index >= this.slides.length) {
+          this.currentSlide = 0;
+        } else if (index < 0) {
+          this.currentSlide = this.slides.length - 1;
+        } else {
+          this.currentSlide = index;
+        }
+
+        this.slides[this.currentSlide].classList.add('active');
+      }
+    }
+
+    customElements.define('testimonial-slider-{{ ai_gen_id }}', TestimonialSlider{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonial slider",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "header",
+      "content": "Content image"
+    },
+    {
+      "type": "image_picker",
+      "id": "testimonial_image",
+      "label": "Testimonial image"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Text content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title",
+      "default": "What our customers say"
+    },
+    {
+      "type": "richtext",
+      "id": "testimonial_1",
+      "label": "Testimonial 1",
+      "default": "<p>This product changed my life! Highly recommend to everyone.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "testimonial_2",
+      "label": "Testimonial 2",
+      "default": "<p>Amazing quality and fast shipping. Will buy again!</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "testimonial_3",
+      "label": "Testimonial 3",
+      "default": "<p>Best purchase I've made this year. Five stars!</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "testimonial_4",
+      "label": "Testimonial 4"
+    },
+    {
+      "type": "richtext",
+      "id": "testimonial_5",
+      "label": "Testimonial 5"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size (desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 14,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size (mobile)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "content_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Content size (desktop)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_size_mobile",
+      "min": 12,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Content size (mobile)",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Navigation buttons"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "min": 30,
+      "max": 70,
+      "step": 5,
+      "unit": "px",
+      "label": "Button size",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_icon_color",
+      "label": "Button icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding (desktop)",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding (mobile)",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom_mobile",
+      "min": 0,
+      "max": 150,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding (mobile)",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial slider"
+    }
+  ]
+}
+{% endschema %}

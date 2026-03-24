@@ -1,0 +1,165 @@
+<section class="custom-image-grid">
+  <div class="page-width">
+    <div class="grid-wrapper">
+      {% for block in section.blocks %}
+        <div class="grid-item" {{ block.shopify_attributes }}>
+          <a href="{{ block.settings.block_link }}">
+            {% if block.settings.block_image != blank %}
+          {{ block.settings.block_image  | image_url: width: 500, height: 500 | image_tag:alt:  block.settings.block_image.alt}}
+
+            {% endif %}
+            <h3>{{ block.settings.block_title }}</h3>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.page-width{
+    max-width:1560px;
+    margin: 0 auto;
+    padding:0 30px;
+}
+
+.custom-image-grid {
+  background-color: {{ section.settings.bg_color }};
+  padding-top: {{ section.settings.padding_top_desktop }}px;
+  padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid-item {
+  display: flex;
+}
+
+.grid-item a {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-decoration: none;
+  height: 100%;
+}
+
+.grid-item img {
+  width: 100%;
+  aspect-ratio: 1 / 1;   
+  object-fit: cover;
+  display: block;
+}
+
+.grid-item h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000;
+  padding: 20px;
+  text-transform: uppercase;
+  border: 1px #0000001c solid;
+  border-top: none;
+  flex-grow: 1;              
+  display: flex;
+  align-items: center;     
+  justify-content: center;   
+  text-align: center;
+}
+.grid-item a:hover h3 {
+  background-color: #9e9c96;
+  transition: 0.3s ease;
+  border:1px solid #000;
+}
+
+@media screen and (max-width: 768px) {
+  .custom-image-grid {
+    padding-top: {{ section.settings.padding_top_mobile }}px;
+    padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+  }
+  .grid-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+</style>
+{% schema %}
+{
+  "name": "custom collection",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top (Desktop)",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom (Desktop)",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Image Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "block_image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "block_title",
+          "label": "Title",
+          "default": "Collection Name"
+        },
+        {
+          "type": "url",
+          "id": "block_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "custom collection"
+    }
+  ]
+}
+{% endschema %}

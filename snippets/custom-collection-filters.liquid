@@ -1,0 +1,150 @@
+<script src="{{ 'custom-collection-filters.js' | asset_url}}" defer></script>
+<div class="filters-main-dev">
+  <div class="custom-filters-nav">
+    <collection-filters class="collection-filters">
+    <div class="custom-collection-heading">
+      <h2>Filters</h2>
+    </div>
+
+    <div class="custom-filters-content">
+      {% for filter in collection.filters %}
+        <div class="custion-filter-all">
+
+          <!-- Accordion Header -->
+          <div class="custom-collection-label accordion-toggle">
+            {{ filter.label }}
+            <span class="accordion-icon">+</span>
+          </div>
+
+         <!-- Accordion Content -->
+            <div class="custom-collection-options accordion-content">
+            {% if filter.type == "list" or filter.type == "boolean" %}
+                {% for value in filter.values %}
+                
+                <div class="collection-filter__option">
+                    <input
+                    type="checkbox"
+                    id="{{ filter.label | handle }}-{{ value.value | handle }}"
+                    name="{{ filter.label | handle }}"
+                    value="{{ value.value | handle }}"
+                    data-add-url="{{ value.url_to_add }}"
+                    data-remove-url="{{ value.url_to_remove }}"
+                    {% if value.active %}
+                        checked
+                    {% endif %}
+                    >
+
+                    <label for="{{ filter.label | handle }}-{{ value.value | handle }}">
+                    {{ value.label }}
+                    </label>
+                </div>
+
+                {% endfor %}
+            {% endif %}
+            </div>
+
+
+        </div>
+      {% endfor %}
+    </div>
+</collection-filters>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".accordion-toggle").forEach((item) => {
+    item.addEventListener("click", function () {
+      const content = this.nextElementSibling;
+      const icon = this.querySelector(".accordion-icon");
+
+      this.classList.toggle("active");
+
+      if (content.style.display === "block") {
+        content.style.display = "none";
+        icon.textContent = "+";
+      } else {
+        content.style.display = "block";
+        icon.textContent = "-";
+      }
+    });
+  });
+});
+</script>
+
+
+
+<style>
+.custom-filters-nav{
+  width:300px;
+}
+.custom-filters-nav h2{
+  margin-bottom: 20px;
+ font-size: 28px;
+ text-align: center;
+ font-weight: 500;
+}
+.filters-main-dev {
+  border: 1px solid #000;
+  margin-right: 20px;
+  padding: 20px;
+}
+.custion-filter-all {
+  border-bottom: 1px solid #ddd;
+}
+.custom-collection-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  border-top: 1px solid #ddd;
+  font-size:20px;
+  font-weight:400;
+}
+.accordion-content {
+  display: none;
+  padding: 10px;
+}
+.filter-item {
+    padding: 8px 0;
+    font-size: 16px;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+.accordion-icon {
+  font-size: 25px;
+}
+.filter-item input {
+  margin-right: 8px;
+}
+.custom-collection-label.active {
+  padding: 15px 10px 0 10px;
+}
+/* Remove default radio style */
+.filter-item input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #000;
+  border-radius: 3px;   /* square */
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+  background: #fff;
+}
+
+/* Show tick when checked */
+.filter-item input[type="radio"]:checked::after {
+  content: "✔";
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 14px;
+  color: #000;
+}
+
+</style>

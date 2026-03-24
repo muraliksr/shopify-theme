@@ -1,0 +1,590 @@
+{% doc %}
+  @prompt
+    i want best announsment bar, and mobile responsive and desktop separate content and slideer add auto scroll opiton and clickable opiton i want. and please create looking good, add width 1600px auto please add page width
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-announcement-bar-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ai-announcement-bar__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.page_width }}px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .ai-announcement-bar__wrapper-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .ai-announcement-bar__slider-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    transition: transform 0.5s ease;
+  }
+
+  .ai-announcement-bar__slide-{{ ai_gen_id }} {
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px;
+    text-align: center;
+  }
+
+  .ai-announcement-bar__link-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+  }
+
+  .ai-announcement-bar__link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.text_hover_color }};
+  }
+
+  .ai-announcement-bar__text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+  }
+
+  .ai-announcement-bar__controls-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .ai-announcement-bar__dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: {{ block.settings.text_color }};
+    opacity: 0.4;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-announcement-bar__dot-{{ ai_gen_id }}.active {
+    opacity: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-announcement-bar__slide-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_vertical_mobile }}px {{ block.settings.padding_horizontal_mobile }}px;
+    }
+
+    .ai-announcement-bar__link-{{ ai_gen_id }},
+    .ai-announcement-bar__text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<announcement-bar-{{ ai_gen_id }}
+  class="ai-announcement-bar-{{ ai_gen_id }}"
+  data-auto-scroll="{{ block.settings.auto_scroll }}"
+  data-scroll-speed="{{ block.settings.scroll_speed }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-announcement-bar__container-{{ ai_gen_id }}">
+    <div class="ai-announcement-bar__wrapper-{{ ai_gen_id }}">
+      <div class="ai-announcement-bar__slider-{{ ai_gen_id }}">
+        {% if block.settings.desktop_message_1 != blank %}
+          <div class="ai-announcement-bar__slide-{{ ai_gen_id }}" data-slide="0">
+            {% if block.settings.desktop_link_1 != blank %}
+              <a href="{{ block.settings.desktop_link_1 }}" class="ai-announcement-bar__link-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_1 }}
+              </a>
+            {% else %}
+              <div class="ai-announcement-bar__text-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_1 }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if block.settings.desktop_message_2 != blank %}
+          <div class="ai-announcement-bar__slide-{{ ai_gen_id }}" data-slide="1">
+            {% if block.settings.desktop_link_2 != blank %}
+              <a href="{{ block.settings.desktop_link_2 }}" class="ai-announcement-bar__link-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_2 }}
+              </a>
+            {% else %}
+              <div class="ai-announcement-bar__text-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_2 }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if block.settings.desktop_message_3 != blank %}
+          <div class="ai-announcement-bar__slide-{{ ai_gen_id }}" data-slide="2">
+            {% if block.settings.desktop_link_3 != blank %}
+              <a href="{{ block.settings.desktop_link_3 }}" class="ai-announcement-bar__link-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_3 }}
+              </a>
+            {% else %}
+              <div class="ai-announcement-bar__text-{{ ai_gen_id }}">
+                {{ block.settings.desktop_message_3 }}
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="ai-announcement-bar__controls-{{ ai_gen_id }}"></div>
+    </div>
+  </div>
+</announcement-bar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class AnnouncementBar{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentSlide = 0;
+        this.autoScrollInterval = null;
+        this.isMobile = window.innerWidth < 750;
+      }
+
+      connectedCallback() {
+        this.slider = this.querySelector('.ai-announcement-bar__slider-{{ ai_gen_id }}');
+        this.controlsContainer = this.querySelector('.ai-announcement-bar__controls-{{ ai_gen_id }}');
+        this.autoScroll = this.dataset.autoScroll === 'true';
+        this.scrollSpeed = parseInt(this.dataset.scrollSpeed) * 1000;
+
+        this.updateContent();
+        this.createControls();
+        
+        if (this.autoScroll && this.slides.length > 1) {
+          this.startAutoScroll();
+        }
+
+        window.addEventListener('resize', () => {
+          const wasMobile = this.isMobile;
+          this.isMobile = window.innerWidth < 750;
+          
+          if (wasMobile !== this.isMobile) {
+            this.updateContent();
+            this.createControls();
+            this.goToSlide(0);
+          }
+        });
+
+        this.addEventListener('mouseenter', () => {
+          if (this.autoScroll) {
+            this.stopAutoScroll();
+          }
+        });
+
+        this.addEventListener('mouseleave', () => {
+          if (this.autoScroll && this.slides.length > 1) {
+            this.startAutoScroll();
+          }
+        });
+      }
+
+      updateContent() {
+        const allSlides = this.querySelectorAll('.ai-announcement-bar__slide-{{ ai_gen_id }}');
+        
+        allSlides.forEach(slide => {
+          slide.style.display = 'none';
+        });
+
+        if (this.isMobile) {
+          this.updateMobileContent();
+        } else {
+          this.updateDesktopContent();
+        }
+
+        this.slides = Array.from(this.querySelectorAll('.ai-announcement-bar__slide-{{ ai_gen_id }}')).filter(
+          slide => slide.style.display !== 'none'
+        );
+      }
+
+      updateDesktopContent() {
+        const desktopSlides = this.querySelectorAll('.ai-announcement-bar__slide-{{ ai_gen_id }}');
+        desktopSlides.forEach(slide => {
+          const slideIndex = parseInt(slide.dataset.slide);
+          const message = this.getDesktopMessage(slideIndex);
+          
+          if (message) {
+            slide.style.display = 'flex';
+          }
+        });
+      }
+
+      updateMobileContent() {
+        const mobileMessages = [
+          '{{ block.settings.mobile_message_1 | escape }}',
+          '{{ block.settings.mobile_message_2 | escape }}',
+          '{{ block.settings.mobile_message_3 | escape }}'
+        ];
+
+        const mobileLinks = [
+          '{{ block.settings.mobile_link_1 }}',
+          '{{ block.settings.mobile_link_2 }}',
+          '{{ block.settings.mobile_link_3 }}'
+        ];
+
+        const desktopSlides = this.querySelectorAll('.ai-announcement-bar__slide-{{ ai_gen_id }}');
+        
+        desktopSlides.forEach((slide, index) => {
+          const mobileMessage = mobileMessages[index];
+          const mobileLink = mobileLinks[index];
+          
+          if (mobileMessage) {
+            slide.style.display = 'flex';
+            
+            const linkElement = slide.querySelector('.ai-announcement-bar__link-{{ ai_gen_id }}');
+            const textElement = slide.querySelector('.ai-announcement-bar__text-{{ ai_gen_id }}');
+            
+            if (mobileLink) {
+              if (linkElement) {
+                linkElement.href = mobileLink;
+                linkElement.textContent = mobileMessage;
+              } else if (textElement) {
+                const newLink = document.createElement('a');
+                newLink.href = mobileLink;
+                newLink.className = 'ai-announcement-bar__link-{{ ai_gen_id }}';
+                newLink.textContent = mobileMessage;
+                slide.innerHTML = '';
+                slide.appendChild(newLink);
+              }
+            } else {
+              if (textElement) {
+                textElement.textContent = mobileMessage;
+              } else if (linkElement) {
+                const newText = document.createElement('div');
+                newText.className = 'ai-announcement-bar__text-{{ ai_gen_id }}';
+                newText.textContent = mobileMessage;
+                slide.innerHTML = '';
+                slide.appendChild(newText);
+              }
+            }
+          }
+        });
+      }
+
+      getDesktopMessage(index) {
+        const messages = [
+          '{{ block.settings.desktop_message_1 | escape }}',
+          '{{ block.settings.desktop_message_2 | escape }}',
+          '{{ block.settings.desktop_message_3 | escape }}'
+        ];
+        return messages[index];
+      }
+
+      createControls() {
+        this.controlsContainer.innerHTML = '';
+        
+        if (this.slides.length <= 1) {
+          this.controlsContainer.style.display = 'none';
+          return;
+        }
+
+        this.controlsContainer.style.display = 'flex';
+
+        this.slides.forEach((slide, index) => {
+          const dot = document.createElement('button');
+          dot.className = 'ai-announcement-bar__dot-{{ ai_gen_id }}';
+          dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
+          
+          if (index === 0) {
+            dot.classList.add('active');
+          }
+
+          dot.addEventListener('click', () => {
+            this.goToSlide(index);
+            if (this.autoScroll) {
+              this.stopAutoScroll();
+              this.startAutoScroll();
+            }
+          });
+
+          this.controlsContainer.appendChild(dot);
+        });
+      }
+
+      goToSlide(index) {
+        if (!this.slides || this.slides.length === 0) return;
+
+        this.currentSlide = index;
+        const offset = -100 * index;
+        this.slider.style.transform = `translateX(${offset}%)`;
+
+        const dots = this.controlsContainer.querySelectorAll('.ai-announcement-bar__dot-{{ ai_gen_id }}');
+        dots.forEach((dot, i) => {
+          if (i === index) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+
+      startAutoScroll() {
+        this.autoScrollInterval = setInterval(() => {
+          const nextSlide = (this.currentSlide + 1) % this.slides.length;
+          this.goToSlide(nextSlide);
+        }, this.scrollSpeed);
+      }
+
+      stopAutoScroll() {
+        if (this.autoScrollInterval) {
+          clearInterval(this.autoScrollInterval);
+          this.autoScrollInterval = null;
+        }
+      }
+
+      disconnectedCallback() {
+        this.stopAutoScroll();
+      }
+    }
+
+    customElements.define('announcement-bar-{{ ai_gen_id }}', AnnouncementBar{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop messages"
+    },
+    {
+      "type": "text",
+      "id": "desktop_message_1",
+      "label": "Message 1",
+      "default": "Free shipping on orders over ₹999"
+    },
+    {
+      "type": "url",
+      "id": "desktop_link_1",
+      "label": "Link 1"
+    },
+    {
+      "type": "text",
+      "id": "desktop_message_2",
+      "label": "Message 2",
+      "default": "New arrivals just dropped - Shop now"
+    },
+    {
+      "type": "url",
+      "id": "desktop_link_2",
+      "label": "Link 2"
+    },
+    {
+      "type": "text",
+      "id": "desktop_message_3",
+      "label": "Message 3",
+      "default": "Limited time offer - 20% off sitewide"
+    },
+    {
+      "type": "url",
+      "id": "desktop_link_3",
+      "label": "Link 3"
+    },
+    {
+      "type": "header",
+      "content": "Mobile messages"
+    },
+    {
+      "type": "text",
+      "id": "mobile_message_1",
+      "label": "Message 1",
+      "default": "Free shipping over ₹999"
+    },
+    {
+      "type": "url",
+      "id": "mobile_link_1",
+      "label": "Link 1"
+    },
+    {
+      "type": "text",
+      "id": "mobile_message_2",
+      "label": "Message 2",
+      "default": "New arrivals - Shop now"
+    },
+    {
+      "type": "url",
+      "id": "mobile_link_2",
+      "label": "Link 2"
+    },
+    {
+      "type": "text",
+      "id": "mobile_message_3",
+      "label": "Message 3",
+      "default": "20% off sitewide"
+    },
+    {
+      "type": "url",
+      "id": "mobile_link_3",
+      "label": "Link 3"
+    },
+    {
+      "type": "header",
+      "content": "Slider settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_scroll",
+      "label": "Auto scroll",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "Page width",
+      "min": 1000,
+      "max": 2000,
+      "step": 100,
+      "unit": "px",
+      "default": 1600
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_hover_color",
+      "label": "Text hover",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font size mobile",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Vertical padding",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Horizontal padding",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_mobile",
+      "label": "Vertical padding mobile",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "label": "Horizontal padding mobile",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}
