@@ -521,6 +521,15 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "test_process_GwRdzT": {
+      "type": "test-process",
+      "name": "new custom section",
+      "settings": {
+        "header_text": "Our Process",
+        "header_subtext": "How we work",
+        "content_text": "<p>Add your content here</p>"
+      }
     }
   },
   "order": [
@@ -528,6 +537,7 @@
     "product_list_fa6P9H",
     "custom_collection_7V4UL4",
     "177324036949f0023c",
-    "17732429650827e4e3"
+    "17732429650827e4e3",
+    "test_process_GwRdzT"
   ]
 }
