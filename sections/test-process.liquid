@@ -1,0 +1,75 @@
+<div class="test-process">
+  <div class="test-process__header">
+    {% if section.settings.header_text %}
+      <h2 class="test-process__title">{{ section.settings.header_text }}</h2>
+    {% endif %}
+    {% if section.settings.header_subtext %}
+      <p class="test-process__subtitle">{{ section.settings.header_subtext }}</p>
+    {% endif %}
+  </div>
+
+  <div class="test-process__content">
+    <p>{{ section.settings.content_text }}</p>
+  </div>
+</div>
+
+<style>
+  .test-process {
+    padding: 40px 20px;
+  }
+
+  .test-process__header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .test-process__title {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .test-process__subtitle {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+  }
+
+  .test-process__content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #444;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Test Process",
+  "settings": [
+    {
+      "type": "text",
+      "id": "header_text",
+      "label": "Header Text",
+      "default": "Our Process"
+    },
+    {
+      "type": "text",
+      "id": "header_subtext",
+      "label": "Header Subtext",
+      "default": "How we work"
+    },
+    {
+      "type": "richtext",
+      "id": "content_text",
+      "label": "Content",
+      "default": "<p>Add your content here</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Test Process"
+    }
+  ]
+}
+{% endschema %}
